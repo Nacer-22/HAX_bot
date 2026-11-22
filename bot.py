@@ -193,16 +193,20 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         return
 
     if data.startswith("buy:"):
+        debited = False
+        api_key_created = False
+        price = -1
         try:
             seconds = int(data.split(":", 1)[1])
             price = int(db.get_settings().get("key_durations", {}).get(str(seconds), -1))
             if price < 0 or not db.debit_points(uid, price):
                 await q.edit_message_text("❌ رصيدك غير كافٍ أو هذه المدة غير متاحة.", reply_markup=back_keyboard("menu:buy"))
                 return
+            debited = True
             keys = await asyncio.to_thread(hax_api.create_keys, seconds * 1000, 1, 1)
             if not keys:
-                db.add_points(uid, price)
                 raise HaxApiError("لم يُرجع الخادم أي مفتاح.")
+            api_key_created = True
             key = keys[0]
             db.add_owned_key(uid, {"id": key["id"], "code": key["code"], "duration_ms": seconds * 1000, "duration_label": duration_label(seconds), "created_at": key.get("createdAt", ""), "last_reset": 0})
             await q.edit_message_text(
@@ -214,7 +218,7 @@ async def on_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("💎 مفاتيحي", callback_data="menu:keys")], [InlineKeyboardButton("⬅️ القائمة", callback_data="menu:home")]]),
             )
         except HaxApiError as exc:
-            if 'price' in locals() and price >= 0 and not locals().get('keys'):
+            if debited and not api_key_created:
                 db.add_points(uid, price)
             await q.edit_message_text(f"⚠️ تعذر إنشاء المفتاح: {esc(exc)}", reply_markup=back_keyboard("menu:buy"), parse_mode=ParseMode.HTML)
         except Exception:
