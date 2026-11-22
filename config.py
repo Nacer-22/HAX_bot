@@ -1,11 +1,20 @@
-""""Configuration for the HAX_NON_ROOT Telegram bot.
+"""Configuration for the HAX_NON_ROOT Telegram bot.
 All credentials are read from environment variables. Never commit a .env file.
 """
 from __future__ import annotations
+
+import logging
 import os
+
 from dotenv import load_dotenv
 
+# HTTPX includes full request URLs in INFO logs. Telegram bot URLs contain the
+# bot token, so keep transport-level logs out of Railway's runtime log stream.
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+
 load_dotenv()
+
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN is missing. Set it in the hosting environment.")
