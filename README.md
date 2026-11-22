@@ -32,7 +32,7 @@
 | `DATA_FILE` | مسار قاعدة بيانات البوت على التخزين الدائم |
 | `SUPPORT_CHANNEL` | رابط قناة الدعم (اختياري) |
 
-عنوان HAX الافتراضي في `.env.example` مأخوذ من عنوان خدمة Railway المضمّن في إعدادات مستودع HAX_RESELLER. عدّله إذا كان عنوان النشر الفعلي مختلفاً.
+تم التحقق من عنوان HAX الافتراضي مع إعدادات خدمة Railway الحالية: `https://haxreseller-production.up.railway.app`. إذا نشرت البوت داخل مشروع Railway نفسه، يمكنك ضبط متغيري الدخول دون نسخ كلمة المرور يدوياً باستخدام مراجع المتغيرات: `HAX_ADMIN_USERNAME=${{HAX_RESELLER.ADMIN_USERNAME}}` و `HAX_ADMIN_PASSWORD=${{HAX_RESELLER.ADMIN_PASSWORD}}`. عدّل عنوان API إذا تغير نطاق الخدمة.
 
 ## التشغيل محلياً
 
