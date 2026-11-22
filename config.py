@@ -10,7 +10,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN is missing. Set it in the hosting environment.")
 
-ADMIN_IDS_RAW = os.getenv("ADMIN_IDS", "8326659016")
+ADMIN_IDS_RAW = os.getenv("ADMIN_IDS", "")
 ADMIN_IDS = {int(x.strip()) for x in ADMIN_IDS_RAW.split(",") if x.strip().isdigit()}
 if not ADMIN_IDS:
     raise RuntimeError("ADMIN_IDS must contain at least one Telegram user ID.")
