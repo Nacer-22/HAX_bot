@@ -1,5 +1,68 @@
 # HAX_NON_ROOT Telegram Bot — Nacer_22
 
-A fresh Telegram bot implementation for HAX_NON_ROOT. License keys are created and managed by the existing HAX_RESELLER API so Telegram-created keys are visible in the current HAX admin panel.
+نسخة مستقلة لبوت Telegram باسم **HAX_NON_ROOT**. ينشئ البوت المفاتيح ويديرها عبر API الخادم الحالي **HAX_RESELLER**؛ لذلك تظهر المفاتيح التي ينشئها Telegram في لوحة التحكم الحالية وتخضع لقواعد التفعيل والانتهاء نفسها.
 
-See the setup guide and environment variable list in this file after the complete project upload.
+## الميزات الموجودة
+
+- تسجيل المستخدمين وروابط الإحالة ومكافآت الدعوة والهدية اليومية ورصيد النقاط.
+- شراء مفاتيح بواسطة النقاط؛ يتم إنشاء الكود الحقيقي عبر HAX_RESELLER.
+- عرض مفاتيح المستخدم وإعادة ضبط الأجهزة للمفاتيح التابعة له فقط، مع مهلة 12 ساعة بين عمليات إعادة الضبط.
+- متجر منتجات رقمي وتسليم المحتوى وسجل المشتريات.
+- لوحة إدارة لإنشاء المفاتيح مباشرة على الخادم، عرض المفاتيح، فحص كود، تشغيل/إيقاف صيانة التطبيق، إدارة القنوات المطلوبة، تعديل أرصدة المستخدمين، البث، الإحصاءات والنسخ الاحتياطي.
+- واجهة عربية وهوية HAX_NON_ROOT · Nacer_22.
+
+## حماية الحساب والرموز
+
+1. رمز Telegram الذي نُشر في المحادثة يجب إبطاله من `@BotFather` وإنشاء رمز جديد. لا تستخدم الرمز الذي ظهر علناً.
+2. لا ترفع ملف `.env` أو كلمة مرور HAX أو قاعدة بيانات التشغيل إلى GitHub.
+3. المتغير `ADMIN_IDS` يجب أن يحتوي **معرّف حسابك الشخصي في Telegram**، وليس معرّف البوت. تم وضع `8326659016` كما طلبت، لكن هذا الرقم يطابق الجزء الرقمي السابق للنقطتين في رمز البوت المكشوف؛ تحقّق منه قبل التشغيل واستبدله بمعرّف حسابك الشخصي إن كان مختلفاً.
+4. يلزم تخزين دائم لمتغير `DATA_FILE`؛ بدون قرص دائم قد تضيع نقاط المستخدمين والإحالات ومعلومات المتجر عند إعادة نشر الخدمة.
+
+## متغيرات البيئة المطلوبة
+
+انسخ `.env.example` محلياً إلى `.env` للتجربة، أو أضف القيم مباشرة في إعدادات الاستضافة:
+
+| المتغير | الوصف |
+|---|---|
+| `BOT_TOKEN` | الرمز الجديد من BotFather |
+| `ADMIN_IDS` | معرّف Telegram الشخصي، ويمكن وضع عدة معرّفات مفصولة بفواصل |
+| `HAX_API_BASE_URL` | عنوان خدمة HAX_RESELLER |
+| `HAX_ADMIN_USERNAME` | اسم مستخدم مدير HAX |
+| `HAX_ADMIN_PASSWORD` | كلمة مرور مدير HAX |
+| `DATA_FILE` | مسار قاعدة بيانات البوت على التخزين الدائم |
+| `SUPPORT_CHANNEL` | رابط قناة الدعم (اختياري) |
+
+عنوان HAX الافتراضي في `.env.example` مأخوذ من عنوان خدمة Railway المضمّن في إعدادات مستودع HAX_RESELLER. عدّله إذا كان عنوان النشر الفعلي مختلفاً.
+
+## التشغيل محلياً
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+# املأ الأسرار داخل .env
+python bot.py
+```
+
+## النشر على Railway
+
+1. أنشئ مشروع Worker من هذا المستودع.
+2. أضف Volume واربطه بالمسار `/data`.
+3. اضبط المتغيرات أعلاه في Railway Variables، ولا ترفع `.env`.
+4. اجعل `DATA_FILE=/data/hax_non_root_bot.json`.
+5. أمر التشغيل مضبوط في `railway.json` على `python bot.py`.
+6. بعد ظهور سجل بدء البوت، أرسل `/start` ثم `/admin` من حساب Telegram المدرج في `ADMIN_IDS`.
+
+## واجهات HAX المستخدمة
+
+- `POST /api/auth/admin/login`
+- `GET /api/admin/overview`
+- `GET /api/admin/keys`
+- `POST /api/admin/keys`
+- `POST /api/admin/keys/:id/reset`
+- `POST /api/check`
+- `GET /api/public/maintenance`
+- `PATCH /api/admin/settings/maintenance`
+
+لا يستخدم هذا المشروع خدمات Firebase أو Val Town التابعة لمشروع المصدر. بيانات المفاتيح تُدار من HAX_RESELLER، بينما تخزن قاعدة JSON المحلية معلومات نقاط Telegram والمتجر وملكية المفاتيح داخل البوت.
